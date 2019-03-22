@@ -1,0 +1,5 @@
+**/bin/
+**/obj/
+/src/.vs/
+*.user
+**/launchsettings.json

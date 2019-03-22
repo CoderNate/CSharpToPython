@@ -1,0 +1,77 @@
+﻿/* ****************************************************************************
+ *
+ * Copyright (c) Microsoft Corporation. 
+ *
+ * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
+ * copy of the license can be found in the License.html file at the root of this distribution. If 
+ * you cannot locate the  Apache License, Version 2.0, please send an email to 
+ * dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+ * by the terms of the Apache License, Version 2.0.
+ *
+ * You must not remove this notice, or any other, from this software.
+ *
+ *
+ * ***************************************************************************/
+
+#if FEATURE_CORE_DLR
+using MSAst = System.Linq.Expressions;
+#else
+
+#endif
+
+using System;
+using System.Diagnostics;
+
+
+
+namespace IronPython.Compiler.Ast {
+    public abstract class Expression : Node {
+        internal static Expression[] EmptyArray = new Expression[0];
+
+
+        internal virtual ConstantExpression ConstantFold() {
+            return null;
+        }
+
+        internal virtual string CheckAssign() {
+            return "can't assign to " + NodeName;
+        }
+
+        internal virtual string CheckAugmentedAssign() {
+            if (CheckAssign() != null) {
+                return "illegal expression for augmented assignment";
+            }
+
+            return null;
+        }
+
+        internal virtual string CheckDelete() {
+            return "can't delete " + NodeName;
+        }
+
+        internal virtual bool IsConstant {
+            get {
+                var folded = ConstantFold();
+                if (folded != null) {
+                    return folded.IsConstant;
+                }
+                return false;
+            }
+        }
+
+        internal virtual object GetConstantValue() {            
+            var folded = ConstantFold();
+            if (folded != null && folded.IsConstant) {
+                return folded.GetConstantValue();
+            }
+
+            throw new InvalidOperationException(GetType().Name + " is not a constant");
+        }
+
+        public virtual Type Type {
+            get {
+                return typeof(object);
+            }
+        }
+    }
+}
