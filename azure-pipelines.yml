@@ -13,8 +13,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- script: dotnet restore ./src
+- task: MSBuild@1
+  inputs:
+    restoreNugetPackages: true
+    configuration: $(buildConfiguration)
 - script: |
-    dotnet build ./src --configuration $(buildConfiguration)
     dotnet test ./src/CSharpToPython.Tests/CSharpToPython.Tests.csproj
   displayName: 'dotnet build $(buildConfiguration)'
   failOnStderr: true
