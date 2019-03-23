@@ -43,6 +43,12 @@ namespace CSharpToPython.Tests {
 
         [Fact]
         public void SimpleIfStatementWorks() {
+            var rslt = Program.ConvertAndRunStatements(engine, "if (true) { return 1; } return 2;");
+            Assert.Equal(1, rslt);
+        }
+
+        [Fact]
+        public void SimpleIfElseStatementWorks() {
             var rslt = Program.ConvertAndRunStatements(engine, "if (true) { return 1; } else { return 2; }");
             Assert.Equal(1, rslt);
         }

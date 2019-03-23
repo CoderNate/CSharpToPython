@@ -253,7 +253,7 @@ namespace CSharpToPython {
                     (PyAst.Expression)Visit(ifStmt.Condition),
                     (PyAst.Statement)Visit(ifStmt.Statement)
                 ));
-                var elseStmt = ifStmt.Else.Statement;
+                var elseStmt = ifStmt.Else?.Statement;
                 ifStmt = elseStmt as IfStatementSyntax;
                 if (ifStmt is null) {
                     finalElseStmt = elseStmt;
