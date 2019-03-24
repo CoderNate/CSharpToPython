@@ -16,7 +16,6 @@ steps:
 - script: dotnet restore ./src
 - task: MSBuild@1
   inputs:
-    restoreNugetPackages: true
     configuration: $(buildConfiguration)
 - script: |
     dotnet test ./src/CSharpToPython.Tests/CSharpToPython.Tests.csproj
@@ -24,7 +23,12 @@ steps:
   failOnStderr: true
 - task: CopyFiles@2
   inputs:
-    contents: 'src\CSharpToPython.Web\bin\$(buildConfiguration)\netstandard2.0\dist\**'
+    sourceFolder: 'src\CSharpToPython.Web\bin\$(buildConfiguration)\netstandard2.0\'
+    contents: 'dist\**'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+- task: CopyFiles@2
+  inputs:
+    contents: 'DeployToGhPages.ps1'
     targetFolder: $(Build.ArtifactStagingDirectory)
 - task: PublishBuildArtifacts@1
   inputs:
