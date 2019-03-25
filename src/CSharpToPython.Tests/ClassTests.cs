@@ -17,6 +17,45 @@ public class SomeClass {
         }
 
         [Fact]
+        public void ClassBaseTypesWork() {
+            var code = @"
+public class SomeBaseClass { public int GetInt() => 1; }
+public class SomeClass : SomeBaseClass {
+}";
+            var rslt = Program.ConvertAndRunCode(engine, code);
+            Assert.Equal(1, (object)((dynamic)rslt).GetInt());
+        }
+
+        [Fact]
+        public void ClassConstructorCanCallBaseClassConstructor() {
+            var code = @"
+public class BaseClass : object {
+   public BaseClass(int x) { this.TheInt = x; }
+   int TheInt ;
+   int GetInt() => this.TheInt;
+}
+public class SomeClass : BaseClass {
+    public SomeClass() : base(1) { }
+}";
+            var rslt = Program.ConvertAndRunCode(engine, code);
+            Assert.Equal(1, (object)((dynamic)rslt).GetInt());
+        }
+        [Fact]
+        public void ClassConstructorCallsBaseClassConstructor() {
+            var code = @"
+public class BaseClass : object {
+   public BaseClass() { this.TheInt = 1; }
+   int TheInt ;
+   int GetInt() => this.TheInt;
+}
+public class SomeClass : BaseClass {
+    public SomeClass() { }
+}";
+            var rslt = Program.ConvertAndRunCode(engine, code);
+            Assert.Equal(1, (object)((dynamic)rslt).GetInt());
+        }
+
+        [Fact]
         public void InstanceMethodWorks() {
             var code = @"
 public class SomeClass {

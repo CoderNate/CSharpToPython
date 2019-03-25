@@ -65,8 +65,9 @@ namespace CSharpToPython {
                     convertedCode += $"\r\n{funcDef.Name}()";
                 }
 
-                if (pythonStatements.Count == 1 && pythonStatements.Single() is PyAst.ClassDefinition classDef) {
-                    convertedCode += $"\r\n{classDef.Name}()";
+                if (pythonStatements.Count >= 1 && pythonStatements.All(s => s is PyAst.ClassDefinition)) {
+                    var lastClassDef = (PyAst.ClassDefinition)pythonStatements.Last();
+                    convertedCode += $"\r\n{lastClassDef.Name}()";
                 }
             }
             var scope = engine.Engine.CreateScope();

@@ -186,7 +186,7 @@ namespace CSharpToPython {
         public void Visit(PyAst.ClassDefinition node) {
             WriteDecorators(node.Decorators ?? Array.Empty<PyAst.Expression>());
             var basesPart = node.Bases.Any()
-                ? $"({string.Join(", ", node.Bases.Cast<PyAst.NameExpression>().Select(b => b.Name))})"
+                ? $"({string.Join(", ", node.Bases.Select(b => Visit(b)))})"
                 : "";
             AppendLineWithIndentation($"class {node.Name}{basesPart}:");
             using (new Indenter(this)) {
