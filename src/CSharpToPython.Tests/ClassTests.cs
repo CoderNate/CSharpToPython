@@ -67,6 +67,20 @@ public class SomeClass {
         }
 
         [Fact]
+        public void OverrideMethodCanCallBase() {
+            var code = @"
+public class SomeBaseClass {
+    public virtual int GetInt() => 1;
+}
+public class SomeClass : SomeBaseClass {
+    public override int GetInt() => base.GetInt();
+}";
+            dynamic rslt = Program.ConvertAndRunCode(engine, code);
+            int theInt = rslt.GetInt();
+            Assert.Equal(1, theInt);
+        }
+
+        [Fact]
         public void StaticMethodWorks() {
             var code = @"
 public class SomeClass {
