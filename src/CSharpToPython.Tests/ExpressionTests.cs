@@ -24,6 +24,14 @@ namespace CSharpToPython.Tests {
         }
 
         [Theory]
+        [InlineData("$\"One {1} two {2}\"", "One 1 two 2")]
+        [InlineData("$\"{1}\"", "1")]
+        [InlineData("$\"{{1}}\"", "{1}")]
+        public void InterpolatedStringsWork(string code, string expectedResult) {
+            Assert.Equal(expectedResult, Program.ConvertAndRunExpression(engine, code));
+        }
+
+        [Theory]
         [InlineData("1+1", 2)]
         [InlineData("1-1", 0)]
         [InlineData("true && true", true)]

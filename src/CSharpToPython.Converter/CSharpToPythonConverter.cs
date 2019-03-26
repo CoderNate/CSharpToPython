@@ -33,6 +33,18 @@ namespace CSharpToPython {
             return new PyAst.ConstantExpression(constantValue);
         }
 
+        public override PyAst.Node VisitInterpolatedStringExpression(InterpolatedStringExpressionSyntax node) {
+            var formatString = string.Join(
+                "",
+                node.Contents.Select(a => a is InterpolatedStringTextSyntax interpText ? interpText.TextToken.Text : "{}")
+            );
+            var interpExpressionArgs = node.Contents.OfType<InterpolationSyntax>()
+                .Select(a => new PyAst.Arg((PyAst.Expression)Visit(a.Expression))).ToArray();
+            return new PyAst.CallExpression(
+                new PyAst.MemberExpression(new PyAst.ConstantExpression(formatString), "format"),
+                interpExpressionArgs);
+        }
+
         public override PyAst.Node VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node) {
             return new PyAst.ListExpression(node.Initializer.Expressions.Select(e => (PyAst.Expression)Visit(e)).ToArray());
         }

@@ -67,7 +67,7 @@ namespace CSharpToPython {
             return $"{Visit(node.Target)}({string.Join(", ", node.Args.Select(a => Visit(a))) })";
         }
         public string Visit(PyAst.ConditionalExpression node) {
-            return $"{Visit(node.TrueExpression)} if {Visit(node.Test)} else {Visit(node.FalseExpression)}";
+            return $"({Visit(node.TrueExpression)} if {Visit(node.Test)} else {Visit(node.FalseExpression)})";
         }
 
         private static readonly string[] charsToEscape = new [] { '\\', '\'', '\"', '\t', '\r', '\n', }
