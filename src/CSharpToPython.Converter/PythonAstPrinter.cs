@@ -8,6 +8,12 @@ namespace CSharpToPython {
         private int IndentLevel;
         public readonly System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
 
+        public static string PrintPythonAst(PyAst.Node node) {
+            var printer = new PythonAstPrinter();
+            printer.Visit(node);
+            return printer.stringBuilder.ToString();
+        }
+
         private void AppendWithIndentation(string line)
                 => stringBuilder.Append(new string(' ', IndentLevel * 4) + line);
         private void AppendLineWithIndentation(string line)

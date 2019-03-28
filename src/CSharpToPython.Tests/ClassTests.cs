@@ -203,5 +203,16 @@ class SomeClass {
             Assert.IsType<System.Random>(obj);
         }
 
+        [Fact]
+        public void InterfaceIsIgnored() {
+            var code = "interface ISomeInterface {}";
+            Assert.Equal("", Program.ConvertCode(code));
+        }
+        [Fact]
+        public void NestedInterfaceIsIgnored() {
+            var code = "class Blah { interface ISomeInterface {} }";
+            Assert.NotNull(Program.ConvertAndRunCode(engine, code));
+        }
+
     }
 }

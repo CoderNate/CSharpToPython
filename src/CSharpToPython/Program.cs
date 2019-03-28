@@ -51,9 +51,7 @@ namespace CSharpToPython {
                 Microsoft.CodeAnalysis.SyntaxNode csharpAstNode,
                 string[] requiredImports = null) {
             var pythonAst = new CSharpToPythonConvert().Visit(csharpAstNode);
-            var printer = new PythonAstPrinter();
-            printer.Visit(pythonAst);
-            var convertedCode = printer.stringBuilder.ToString();
+            var convertedCode = PythonAstPrinter.PrintPythonAst(pythonAst);
             var extraImports = requiredImports is null ? "" : string.Join("\r\n", requiredImports.Select(i => "import " + i));
             convertedCode = "import clr\r\n" + extraImports + "\r\n" + convertedCode;
 
@@ -73,6 +71,12 @@ namespace CSharpToPython {
             var scope = engine.Engine.CreateScope();
             var source = engine.Engine.CreateScriptSourceFromString(convertedCode, Microsoft.Scripting.SourceCodeKind.AutoDetect);
             return source.Execute(scope);
+        }
+
+        public static string ConvertCode(string csharpCode) {
+            var csharpAst = Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ParseSyntaxTree(csharpCode).GetRoot();
+            var pythonAst = new CSharpToPythonConvert().Visit(csharpAst);
+            return PythonAstPrinter.PrintPythonAst(pythonAst);
         }
     }
 

@@ -702,6 +702,10 @@ namespace CSharpToPython {
             return statements;
         }
 
+        public override PyAst.Node VisitInterfaceDeclaration(InterfaceDeclarationSyntax node) {
+            return new PyAst.SuiteStatement(Array.Empty<PyAst.Statement>());
+        }
+
         public override PyAst.Node VisitNamespaceDeclaration(NamespaceDeclarationSyntax node) {
             var converted = node.Members.Select(m => (PyAst.Statement)Visit(m)).ToArray();
             if (converted.Length == 1) {
