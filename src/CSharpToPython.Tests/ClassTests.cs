@@ -214,5 +214,21 @@ class SomeClass {
             Assert.NotNull(Program.ConvertAndRunCode(engine, code));
         }
 
+        [Fact]
+        public void NestedClassesWork() {
+            var code = @"
+class SomeClass {
+    public class SomeInnerClass {
+        public int GetInt() => 1;
+    }
+}
+class SomeOtherClass {
+    public int GetSomeClassInt() => new SomeClass.SomeInnerClass().GetInt();
+}
+";
+            dynamic rslt = Program.ConvertAndRunCode(engine, code);
+            int someValue = rslt.GetSomeClassInt();
+            Assert.Equal(1, someValue);
+        }
     }
 }
