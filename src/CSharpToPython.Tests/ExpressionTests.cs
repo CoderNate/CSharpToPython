@@ -32,6 +32,13 @@ namespace CSharpToPython.Tests {
         }
 
         [Theory]
+        [InlineData("@\"a\\b\"", "a\\b")]
+        [InlineData("@\"a\"\"b\"", "a\"b")]
+        public void RawStringsWork(string code, string expectedResult) {
+            Assert.Equal(expectedResult, Program.ConvertAndRunExpression(engine, code));
+        }
+
+        [Theory]
         [InlineData("1+1", 2)]
         [InlineData("1-1", 0)]
         [InlineData("true && true", true)]
