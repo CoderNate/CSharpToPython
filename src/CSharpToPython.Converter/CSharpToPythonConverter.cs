@@ -665,7 +665,9 @@ namespace CSharpToPython {
                 return visited;
             }
 
-            var convertedMembers = EnsureAtleastOneStatement(members.Select(convertMember).ToArray());
+            var convertedMembers = EnsureAtleastOneStatement(
+                members.Select(convertMember).Where(a => !(a is PyAst.SuiteStatement s && !s.Statements.Any())).ToArray()
+            );
             var popped = _classNamesStack.Pop();
             System.Diagnostics.Debug.Assert(popped == node.Identifier.Text);
             return new PyAst.ClassDefinition(
