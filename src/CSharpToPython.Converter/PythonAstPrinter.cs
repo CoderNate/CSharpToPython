@@ -279,7 +279,13 @@ namespace CSharpToPython {
                 Visit(node.Body);
             }
         }
-        public void Visit(PyAst.WithStatement node)=> throw new NotImplementedException();
+        public void Visit(PyAst.WithStatement node) {
+            var asClause = node.Variable is null ? "" : " as " + Visit(node.Variable);
+            AppendLineWithIndentation($"with {Visit(node.ContextManager)}{asClause}:");
+            using (new Indenter(this)) {
+                Visit(node.Body);
+            }
+        }
         public string Visit(PyAst.Arg node) => (node.Name is null ? "" : node.Name + " = ") + Visit(node.Expression);
         public void Visit(PyAst.ComprehensionFor node)=> throw new NotImplementedException();
         public void Visit(PyAst.ComprehensionIf node)=> throw new NotImplementedException();

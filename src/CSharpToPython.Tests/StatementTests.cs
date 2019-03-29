@@ -131,6 +131,27 @@ throw new System.Exception(""Uhoh"");
         }
 
         [Fact]
+        public void UsingStatementWorks() {
+            var code = @"
+using (var a = null) {
+    return 1;
+}";
+            // Assert that executing the using statement attempts to call __exit__
+            var ex = Assert.Throws<MissingMemberException>(() => Program.ConvertAndRunStatements(engine, code));
+            Assert.Contains("'NoneType' object has no attribute '__exit__'", ex.Message);
+        }
+        [Fact]
+        public void UsingStatementWithoutVariableWorks() {
+            var code = @"
+using (null) {
+    return 1;
+}";
+            // Assert that executing the using statement attempts to call __exit__
+            var ex = Assert.Throws<MissingMemberException>(() => Program.ConvertAndRunStatements(engine, code));
+            Assert.Contains("'NoneType' object has no attribute '__exit__'", ex.Message);
+        }
+
+        [Fact]
         public void EmptySemicolonStatementWorks() {
             var rslt = Program.ConvertAndRunStatements(engine, ";; return 1");
             Assert.Equal(1, rslt);

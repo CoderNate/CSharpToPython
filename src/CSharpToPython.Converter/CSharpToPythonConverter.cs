@@ -412,6 +412,19 @@ namespace CSharpToPython {
             return new PyAst.ContinueStatement();
         }
 
+        public override PyAst.Node VisitUsingStatement(UsingStatementSyntax node) {
+            var body = (PyAst.Statement)Visit(node.Statement);
+            if (node.Expression is null) {
+                var v = node.Declaration.Variables.Single();
+                return new PyAst.WithStatement(
+                    (PyAst.Expression)Visit(v.Initializer.Value),
+                    new PyAst.NameExpression(v.Identifier.Text),
+                    body
+                );
+            }
+            return new PyAst.WithStatement((PyAst.Expression)Visit(node.Expression), null, body);
+        }
+
         public override PyAst.Node VisitTryStatement(TryStatementSyntax node) {
             PyAst.TryStatementHandler ConvertCatchBlock(CatchClauseSyntax catchClause) {
                 var hasIdentifier = catchClause.Declaration.Identifier.Text != "";
