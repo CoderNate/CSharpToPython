@@ -157,11 +157,40 @@ namespace CSharpToPython {
             return new PyAst.MemberExpression((PyAst.Expression)Visit(node.Expression), node.Name.Identifier.Text);
         }
 
+        public override PyAst.Node VisitCastExpression(CastExpressionSyntax node) {
+            var visitedExpr = (PyAst.Expression)Visit(node.Expression);
+            if (node.Type is PredefinedTypeSyntax predefined) {
+                string conversionFuncName;
+                switch (predefined.Keyword.RawKind) {
+                    case (int)CSharpSyntaxKind.IntKeyword: conversionFuncName = "int"; break;
+                    case (int)CSharpSyntaxKind.BoolKeyword: conversionFuncName = "bool"; break;
+                    case (int)CSharpSyntaxKind.FloatKeyword: conversionFuncName = "float"; break;
+                    case (int)CSharpSyntaxKind.DoubleKeyword: conversionFuncName = "float"; break;
+                    case (int)CSharpSyntaxKind.CharKeyword: conversionFuncName = "chr"; break;
+                    default: conversionFuncName = null; break;
+                }
+                if (conversionFuncName != null) {
+                    return new PyAst.CallExpression(
+                        new PyAst.NameExpression(conversionFuncName),
+                        new [] { new PyAst.Arg(visitedExpr)}
+                    );
+                }
+            }
+
+            return new PyAst.CallExpression(
+                new PyAst.MemberExpression(new PyAst.NameExpression("clr"), "Convert"),
+                new [] { new PyAst.Arg(visitedExpr), new PyAst.Arg((PyAst.Expression)Visit(node.Type))}
+            );
+        }
+
         public override PyAst.Node VisitPredefinedType(PredefinedTypeSyntax node) {
             string convertedTypeName;
             switch (node.Keyword.RawKind) {
                 case (int)CSharpSyntaxKind.IntKeyword: convertedTypeName = "int"; break;
                 case (int)CSharpSyntaxKind.ObjectKeyword: convertedTypeName = "object"; break;
+                case (int)CSharpSyntaxKind.BoolKeyword: convertedTypeName = "bool"; break;
+                case (int)CSharpSyntaxKind.FloatKeyword: convertedTypeName = "float"; break;
+                case (int)CSharpSyntaxKind.DoubleKeyword: convertedTypeName = "float"; break;
                 default:
                     throw new NotImplementedException();
             }

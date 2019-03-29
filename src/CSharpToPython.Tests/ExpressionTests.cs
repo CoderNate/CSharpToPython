@@ -60,6 +60,15 @@ namespace CSharpToPython.Tests {
             Assert.Equal(expectedResult, Program.ConvertAndRunExpression(engine, code));
         }
 
+        [Theory]
+        [InlineData("(double)1", 1.0)]
+        [InlineData("(int)1.2", 1)]
+        [InlineData("(char)97", "a")]
+        [InlineData("(object)1", 1)]
+        public void CastsWork(string code, object expectedResult) {
+            Assert.Equal(expectedResult, Program.ConvertAndRunStatements(engine, "return " + code));
+        }
+
         [Fact]
         public void IsExpressionWorks() {
             Assert.Equal(true, Program.ConvertAndRunExpression(engine, "1 is int"));
