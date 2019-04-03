@@ -168,6 +168,16 @@ using (null) {
             Assert.Equal(1, rslt);
         }
         [Fact]
+        public void StatementBodiedLambdaWorksInsideIfStmt2() {
+            var code = @"
+            object rslt;
+            if (true)
+                rslt = (a => { return a; })(1);
+            return rslt;";
+            var rslt = Program.ConvertAndRunStatements(engine, code);
+            Assert.Equal(1, rslt);
+        }
+        [Fact]
         public void StatementBodiedLambdaWorksInsideExpressionBodiedMethod() {
             var code = @"
 class A {

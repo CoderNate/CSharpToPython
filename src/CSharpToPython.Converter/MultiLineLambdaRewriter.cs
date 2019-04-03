@@ -36,12 +36,19 @@ namespace CSharpToPython {
             return visited;
         }
 
+        public override SyntaxNode VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node) {
+            return MaybeReplaceLambda(node) ?? base.VisitSimpleLambdaExpression(node);
+        }
         public override SyntaxNode VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node) {
+            return MaybeReplaceLambda(node) ?? base.VisitParenthesizedLambdaExpression(node);
+        }
+        private ExpressionSyntax MaybeReplaceLambda(LambdaExpressionSyntax node) {
             if (_lambdaNumbersDict.TryGetValue(node, out var index)) {
                 return SyntaxFactory.IdentifierName($"lambda__{index}");
             }
-            return base.VisitParenthesizedLambdaExpression(node);
+            return null;
         }
+
         private LocalFunctionStatementSyntax ConvertLambda(LambdaExpressionSyntax node) {
             LambdaExpressionSyntax visited;
             ParameterListSyntax parameterList;
