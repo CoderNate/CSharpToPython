@@ -157,5 +157,66 @@ using (null) {
             Assert.Equal(1, rslt);
         }
 
+        [Fact]
+        public void StatementBodiedLambdaWorksInsideIfStmt() {
+            var code = @"
+            object rslt;
+            if (true)
+                rslt = ((int a) => { return a; })(1);
+            return rslt;";
+            var rslt = Program.ConvertAndRunStatements(engine, code);
+            Assert.Equal(1, rslt);
+        }
+        [Fact]
+        public void StatementBodiedLambdaWorksInsideExpressionBodiedMethod() {
+            var code = @"
+class A {
+int SomeMethod() => ((int a) => { a = a + 1; return a; })(0);
+}";
+            dynamic classObj = Program.ConvertAndRunCode(engine, code);
+            object rslt = classObj.SomeMethod();
+            Assert.Equal(1, rslt);
+        }
+        [Fact]
+        public void StatementBodiedLambdaWorksInsideMethod() {
+            var code = @"
+class A {
+void SomeMethod() {
+var x = (int a) => { a = a + 1; return a; }(0);
+return x;
+}
+}";
+            dynamic classObj = Program.ConvertAndRunCode(engine, code);
+            object rslt = classObj.SomeMethod();
+            Assert.Equal(1, rslt);
+        }
+        [Fact]
+        public void StatementBodiedLambdaWorksInSwitchStmt() {
+            var code = @"
+            object rslt;
+            switch (true) {
+                case true:
+                    rslt = ((int a) => { return a; })(1);
+                    break;
+            }
+            return rslt;";
+            var rslt = Program.ConvertAndRunStatements(engine, code);
+            Assert.Equal(1, rslt);
+        }
+        [Fact]
+        public void DoubleStatementBodiedLambdasWork() {
+            var code = @"
+            object rslt;
+            switch (true) {
+                case true:
+                    rslt = ((int a) => { return a; })(((int a) => { return a; })(1));
+                    break;
+            }
+            return rslt;";
+            var rslt = Program.ConvertAndRunStatements(engine, code);
+            Assert.Equal(1, rslt);
+        }
+
+
     }
 }

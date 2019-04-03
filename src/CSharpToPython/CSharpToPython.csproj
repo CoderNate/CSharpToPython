@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Include="..\CSharpToPython.Converter\CSharpToPythonConverter.cs" Link="CSharpToPythonConverter.cs" />
+    <Compile Include="..\CSharpToPython.Converter\MultiLineLambdaRewriter.cs" Link="MultiLineLambdaRewriter.cs" />
     <Compile Include="..\CSharpToPython.Converter\PythonAstPrinter.cs" Link="PythonAstPrinter.cs" />
   </ItemGroup>
 

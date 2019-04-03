@@ -15,11 +15,9 @@ namespace CSharpToPython.Web {
             try
             {
                 var parsed = Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ParseSyntaxTree(code).GetRoot();
-                var converter = new CSharpToPython.CSharpToPythonConvert();
-                var pyAst = converter.Visit(parsed);
-                var printer = new CSharpToPython.PythonAstPrinter();
-                printer.Visit(pyAst);
-                var converted = printer.stringBuilder.ToString();
+                var rewritten = MultiLineLambdaRewriter.RewriteMultiLineLambdas(parsed);
+                var pyAst = new CSharpToPython.CSharpToPythonConvert().Visit(rewritten);
+                var converted = PythonAstPrinter.PrintPythonAst(pyAst);
                 return converted;
             } catch (Exception ex) {
                 return ex.ToString();

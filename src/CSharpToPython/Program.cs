@@ -50,7 +50,8 @@ namespace CSharpToPython {
                 EngineWrapper engine,
                 Microsoft.CodeAnalysis.SyntaxNode csharpAstNode,
                 string[] requiredImports = null) {
-            var pythonAst = new CSharpToPythonConvert().Visit(csharpAstNode);
+            var rewritten = MultiLineLambdaRewriter.RewriteMultiLineLambdas(csharpAstNode);
+            var pythonAst = new CSharpToPythonConvert().Visit(rewritten);
             var convertedCode = PythonAstPrinter.PrintPythonAst(pythonAst);
             var extraImports = requiredImports is null ? "" : string.Join("\r\n", requiredImports.Select(i => "import " + i));
             convertedCode = "import clr\r\n" + extraImports + "\r\n" + convertedCode;
@@ -75,7 +76,8 @@ namespace CSharpToPython {
 
         public static string ConvertCode(string csharpCode) {
             var csharpAst = Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ParseSyntaxTree(csharpCode).GetRoot();
-            var pythonAst = new CSharpToPythonConvert().Visit(csharpAst);
+            var rewritten = MultiLineLambdaRewriter.RewriteMultiLineLambdas(csharpAst);
+            var pythonAst = new CSharpToPythonConvert().Visit(rewritten);
             return PythonAstPrinter.PrintPythonAst(pythonAst);
         }
     }
