@@ -858,14 +858,6 @@ namespace CSharpToPython {
         //    return base.VisitAnonymousMethodExpression(node);
         //}
 
-        //public override PyAst.Node VisitAnonymousObjectCreationExpression(AnonymousObjectCreationExpressionSyntax node) {
-        //    return base.VisitAnonymousObjectCreationExpression(node);
-        //}
-
-        //public override PyAst.Node VisitAnonymousObjectMemberDeclarator(AnonymousObjectMemberDeclaratorSyntax node) {
-        //    return base.VisitAnonymousObjectMemberDeclarator(node);
-        //}
-
         //public override PyAst.Node VisitArrayRankSpecifier(ArrayRankSpecifierSyntax node) {
         //    return base.VisitArrayRankSpecifier(node);
         //}
@@ -902,10 +894,6 @@ namespace CSharpToPython {
         //    return base.VisitBadDirectiveTrivia(node);
         //}
 
-        //public override PyAst.Node VisitBaseExpression(BaseExpressionSyntax node) {
-        //    return base.VisitBaseExpression(node);
-        //}
-
         //public override PyAst.Node VisitBaseList(BaseListSyntax node) {
         //    return base.VisitBaseList(node);
         //}
@@ -920,10 +908,6 @@ namespace CSharpToPython {
 
         //public override PyAst.Node VisitCasePatternSwitchLabel(CasePatternSwitchLabelSyntax node) {
         //    return base.VisitCasePatternSwitchLabel(node);
-        //}
-
-        //public override PyAst.Node VisitCastExpression(CastExpressionSyntax node) {
-        //    return base.VisitCastExpression(node);
         //}
 
         //public override PyAst.Node VisitCatchDeclaration(CatchDeclarationSyntax node) {
@@ -1094,18 +1078,6 @@ namespace CSharpToPython {
         //    return base.VisitInitializerExpression(node);
         //}
 
-        //public override PyAst.Node VisitInterfaceDeclaration(InterfaceDeclarationSyntax node) {
-        //    return base.VisitInterfaceDeclaration(node);
-        //}
-
-        //public override PyAst.Node VisitInterpolatedStringExpression(InterpolatedStringExpressionSyntax node) {
-        //    return base.VisitInterpolatedStringExpression(node);
-        //}
-
-        //public override PyAst.Node VisitInterpolatedStringText(InterpolatedStringTextSyntax node) {
-        //    return base.VisitInterpolatedStringText(node);
-        //}
-
         //public override PyAst.Node VisitInterpolation(InterpolationSyntax node) {
         //    return base.VisitInterpolation(node);
         //}
@@ -1250,10 +1222,6 @@ namespace CSharpToPython {
         //    return base.VisitShebangDirectiveTrivia(node);
         //}
 
-        //public override PyAst.Node VisitSimpleBaseType(SimpleBaseTypeSyntax node) {
-        //    return base.VisitSimpleBaseType(node);
-        //}
-
         //public override PyAst.Node VisitSingleVariableDesignation(SingleVariableDesignationSyntax node) {
         //    return base.VisitSingleVariableDesignation(node);
         //}
@@ -1324,10 +1292,6 @@ namespace CSharpToPython {
 
         //public override PyAst.Node VisitUnsafeStatement(UnsafeStatementSyntax node) {
         //    return base.VisitUnsafeStatement(node);
-        //}
-
-        //public override PyAst.Node VisitUsingStatement(UsingStatementSyntax node) {
-        //    return base.VisitUsingStatement(node);
         //}
 
         //public override PyAst.Node VisitVariableDeclarator(VariableDeclaratorSyntax node) {
