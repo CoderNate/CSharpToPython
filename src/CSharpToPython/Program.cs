@@ -74,8 +74,15 @@ namespace CSharpToPython {
             return source.Execute(scope);
         }
 
+        public static string ConvertExpressionCode(string csharpCode) {
+            var csharpAst = Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ParseExpression(csharpCode);
+            return ConvertCsharpAST(csharpAst);
+        }
         public static string ConvertCode(string csharpCode) {
             var csharpAst = Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ParseSyntaxTree(csharpCode).GetRoot();
+            return ConvertCsharpAST(csharpAst);
+        }
+        private static string ConvertCsharpAST(Microsoft.CodeAnalysis.SyntaxNode csharpAst) {
             var rewritten = MultiLineLambdaRewriter.RewriteMultiLineLambdas(csharpAst);
             var pythonAst = new CSharpToPythonConvert().Visit(rewritten);
             return PythonAstPrinter.PrintPythonAst(pythonAst);

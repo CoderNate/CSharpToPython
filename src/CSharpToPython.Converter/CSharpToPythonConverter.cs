@@ -13,7 +13,8 @@ namespace IronPython.Compiler.Ast {
 namespace CSharpToPython {
     public class CSharpToPythonConvert : Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor<PyAst.Node> {
 
-        public override PyAst.Node DefaultVisit(Microsoft.CodeAnalysis.SyntaxNode node) {
+
+        public override PyAst.Node DefaultVisit(SyntaxNode node) {
             throw new NotImplementedException($"Node type {node.GetType().Name} not implemented yet.");
         }
 
@@ -252,6 +253,14 @@ namespace CSharpToPython {
                 return new PyAst.Arg(node.NameColon.Name.Identifier.ValueText, expr);
             }
             return new PyAst.Arg(expr);
+        }
+
+        public override PyAst.Node VisitAnonymousObjectCreationExpression(AnonymousObjectCreationExpressionSyntax node) {
+            var args = node.Initializers.Select(i => new PyAst.Arg(
+                i.NameEquals?.Name.Identifier.Text ?? ((PyAst.NameExpression)Visit(i.Expression)).Name,
+                (PyAst.Expression)Visit(i.Expression)
+            )).ToArray();
+            return new PyAst.CallExpression( new PyAst.NameExpression("AnonymousObject"), args );
         }
 
         public override PyAst.Node VisitAssignmentExpression(AssignmentExpressionSyntax node) {

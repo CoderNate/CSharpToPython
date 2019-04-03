@@ -102,5 +102,12 @@ namespace CSharpToPython.Tests {
             Assert.Equal(2, Program.ConvertAndRunExpression(engine, "((a, b) => a + b)(1, 1)"));
         }
 
+        [Theory]
+        [InlineData("new { a = 2 }", "AnonymousObject(a = 2)")]
+        [InlineData("new { a }", "AnonymousObject(a = a)")]
+        public void AnonymousObjectsWork(string code, string expected) {
+            var converted = Program.ConvertExpressionCode(code);
+            Assert.Equal(expected, converted);
+        }
     }
 }
