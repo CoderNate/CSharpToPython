@@ -765,6 +765,28 @@ namespace CSharpToPython {
             return new PyAst.SuiteStatement(Array.Empty<PyAst.Statement>());
         }
 
+        public override PyAst.Node VisitEnumDeclaration(EnumDeclarationSyntax node) {
+            PyAst.Statement convertEnumMember(EnumMemberDeclarationSyntax member) {
+                var counter = 0;
+                PyAst.Expression initializer;
+                if (member.EqualsValue is null) {
+                    initializer = new PyAst.ConstantExpression(counter++);
+                } else {
+                    initializer = (PyAst.Expression)Visit(member.EqualsValue.Value);
+                }
+                return new PyAst.AssignmentStatement(
+                    new PyAst.Expression[] { new PyAst.NameExpression(member.Identifier.Text) },
+                    initializer
+                );
+            }
+            var bodyStatements = node.Members
+                .Select(convertEnumMember).ToArray();
+            return new PyAst.ClassDefinition(
+                node.Identifier.Text,
+                new PyAst.Expression[0],
+                new PyAst.SuiteStatement(bodyStatements));
+        }
+
         public override PyAst.Node VisitNamespaceDeclaration(NamespaceDeclarationSyntax node) {
             var converted = node.Members.Select(m => (PyAst.Statement)Visit(m)).ToArray();
             if (converted.Length == 1) {

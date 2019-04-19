@@ -245,5 +245,18 @@ class SomeOtherClass {
             int someValue = rslt.GetSomeClassInt();
             Assert.Equal(1, someValue);
         }
+
+        [Fact]
+        public void EnumsWork() {
+            var code = @"
+enum SomeEnum { x, y = 3 }
+class SomeClass {
+    public object GetEnumVal() => SomeEnum.x;
+}
+";
+            dynamic rslt = Program.ConvertAndRunCode(engine, code);
+            int someValue = rslt.GetEnumVal();
+            Assert.Equal(0, someValue);
+        }
     }
 }
