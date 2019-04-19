@@ -102,6 +102,12 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.GreaterThanOrEqualExpression: pythonOp = PythonOperator.GreaterThanOrEqual; break;
                 case CSharpSyntaxKind.LessThanExpression: pythonOp = PythonOperator.LessThan; break;
                 case CSharpSyntaxKind.LessThanOrEqualExpression: pythonOp = PythonOperator.LessThanOrEqual; break;
+                case CSharpSyntaxKind.ModuloExpression: pythonOp = PythonOperator.Mod; break;
+                case CSharpSyntaxKind.LeftShiftExpression: pythonOp = PythonOperator.LeftShift; break;
+                case CSharpSyntaxKind.RightShiftExpression: pythonOp = PythonOperator.RightShift; break;
+                case CSharpSyntaxKind.BitwiseAndExpression: pythonOp = PythonOperator.BitwiseAnd; break;
+                case CSharpSyntaxKind.BitwiseOrExpression: pythonOp = PythonOperator.BitwiseOr; break;
+                case CSharpSyntaxKind.ExclusiveOrExpression: pythonOp = PythonOperator.ExclusiveOr; break;
                 default:
                     throw new NotImplementedException($"Binary expression kind {node.Kind()} not implemented yet.");
             }
@@ -114,6 +120,7 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.UnaryPlusExpression: op = PythonOperator.Add; break;
                 case CSharpSyntaxKind.UnaryMinusExpression: op = PythonOperator.Subtract; break;
                 case CSharpSyntaxKind.LogicalNotExpression: op = PythonOperator.Not; break;
+                case CSharpSyntaxKind.BitwiseNotExpression: op = PythonOperator.Invert; break;
                 default:
                     throw new NotImplementedException();
             }

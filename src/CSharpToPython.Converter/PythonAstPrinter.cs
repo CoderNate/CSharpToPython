@@ -64,6 +64,12 @@ namespace CSharpToPython {
                 case IronPython.Compiler.PythonOperator.GreaterThanOrEqual: operatorText = ">="; break;
                 case IronPython.Compiler.PythonOperator.LessThan: operatorText = "<"; break;
                 case IronPython.Compiler.PythonOperator.LessThanOrEqual: operatorText = "<="; break;
+                case IronPython.Compiler.PythonOperator.Mod: operatorText = "%"; break;
+                case IronPython.Compiler.PythonOperator.LeftShift: operatorText = "<<"; break;
+                case IronPython.Compiler.PythonOperator.RightShift: operatorText = ">>"; break;
+                case IronPython.Compiler.PythonOperator.BitwiseAnd: operatorText = "&"; break;
+                case IronPython.Compiler.PythonOperator.BitwiseOr: operatorText = "|"; break;
+                case IronPython.Compiler.PythonOperator.ExclusiveOr: operatorText = "^"; break;
                 default:
                     throw new NotImplementedException();
             }
@@ -131,6 +137,7 @@ namespace CSharpToPython {
             switch (node.Op) {
                 case IronPython.Compiler.PythonOperator.Add: operatorText = "+"; break;
                 case IronPython.Compiler.PythonOperator.Subtract: operatorText = "-"; break;
+                case IronPython.Compiler.PythonOperator.Invert: operatorText = "~"; break;
                 case IronPython.Compiler.PythonOperator.Not:
                     return $"(not {Visit(node.Expression)})";
                 default:

@@ -49,6 +49,12 @@ namespace CSharpToPython.Tests {
         [InlineData("1 > 0", true)]
         [InlineData("1 <= 1", true)]
         [InlineData("1 < 2", true)]
+        [InlineData("3 % 2", 3 % 2)]
+        [InlineData("4 << 1", 4 << 1)]
+        [InlineData("4 >> 1", 4 >> 1)]
+        [InlineData("3 & 1", 3 & 1)]
+        [InlineData("2 | 1", 2 | 1)]
+        [InlineData("2 ^ 1", 2 ^ 1)]
         public void BinaryOperatorsWork(string code, object expectedResult) {
             Assert.Equal(expectedResult, Program.ConvertAndRunExpression(engine, code));
         }
@@ -56,6 +62,7 @@ namespace CSharpToPython.Tests {
         [Theory]
         [InlineData("!false", true)]
         [InlineData("-(1)", -1)]
+        [InlineData("~(5)", ~5)]
         public void UnaryOperatorsWork(string code, object expectedResult) {
             Assert.Equal(expectedResult, Program.ConvertAndRunExpression(engine, code));
         }
