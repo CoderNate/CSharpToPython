@@ -122,7 +122,7 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.LogicalNotExpression: op = PythonOperator.Not; break;
                 case CSharpSyntaxKind.BitwiseNotExpression: op = PythonOperator.Invert; break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Prefix unary operator {node} not implemented");
             }
             return new PyAst.UnaryExpression(op, (PyAst.Expression)Visit(node.Operand));
         }
@@ -133,7 +133,7 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.PostIncrementExpression: op = PythonOperator.Add; break;
                 case CSharpSyntaxKind.PostDecrementExpression: op = PythonOperator.Subtract; break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Postfix unary operator {node} not implemented");
             }
             return new PyAst.AugmentedAssignStatement(
                 op,
@@ -201,7 +201,7 @@ namespace CSharpToPython {
                 case (int)CSharpSyntaxKind.FloatKeyword: convertedTypeName = "float"; break;
                 case (int)CSharpSyntaxKind.DoubleKeyword: convertedTypeName = "float"; break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Predefined type {node} not implemented");
             }
             return new PyAst.NameExpression(convertedTypeName);
         }
@@ -219,7 +219,7 @@ namespace CSharpToPython {
 
         public override PyAst.Node VisitElementAccessExpression(ElementAccessExpressionSyntax node) {
             if (node.ArgumentList.Arguments.Count > 1) {
-                throw new NotImplementedException();
+                throw new NotImplementedException("VisitElementAccessExpression not implemented for multiple args");
             }
             return new PyAst.IndexExpression(
                 (PyAst.Expression)Visit(node.Expression),
@@ -237,7 +237,7 @@ namespace CSharpToPython {
                 IEnumerable<ParameterSyntax> parameters,
                 Microsoft.CodeAnalysis.CSharp.CSharpSyntaxNode body) {
             if (body is StatementSyntax) {
-                throw new NotImplementedException();
+                throw new NotImplementedException("Lambda expression with statement body not implemented");
             }
             var convertedParameters = parameters.Select(p => new PyAst.Parameter(p.Identifier.Text)).ToArray();
             return new PyAst.LambdaExpression(
@@ -283,7 +283,7 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.MultiplyAssignmentExpression: op = PythonOperator.Multiply; break;
                 case CSharpSyntaxKind.DivideAssignmentExpression: op = PythonOperator.Divide; break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Assignment operator {node} not implemented yet");
             }
             return new PyAst.AugmentedAssignStatement(op, leftExpr, right);
         }
@@ -795,11 +795,16 @@ namespace CSharpToPython {
             return new PyAst.SuiteStatement(converted);
         }
 
+        internal static readonly string UsingStaticMagicString = "USING_STATIC_ERROR";
         public override PyAst.Node VisitUsingDirective(UsingDirectiveSyntax node) {
+            var isUsingStatic = !node.StaticKeyword.IsKind(CSharpSyntaxKind.None);
+            var moduleName = new PyAst.ModuleName(
+                (node.Name.ToString() + (isUsingStatic ? "." + UsingStaticMagicString: "")) .Split('.')
+            );
             if (node.Alias != null) {
-                throw new NotImplementedException();
+                var asNames = node.Alias is null ? null : new[] { node.Alias.Name.Identifier.Text };
+                return new PyAst.ImportStatement(new[] { moduleName }, asNames, false);
             }
-            var moduleName = new PyAst.ModuleName(node.Name.ToString().Split('.'));
             return new PyAst.FromImportStatement(moduleName, null, null, false, false);
         }
 

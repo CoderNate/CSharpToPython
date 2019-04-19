@@ -223,7 +223,18 @@ namespace CSharpToPython {
             }
         }
         public void Visit(PyAst.FromImportStatement node) {
-            AppendLineWithIndentation($"from {string.Join(".", node.Root.Names)} import *");
+            var aliasPart = node.AsNames is null ? "" : $" as {node.AsNames.Single()}";
+            var isUsingStatic = node.Root.Names.Contains(CSharpToPythonConvert.UsingStaticMagicString);
+            var modName = FormatDottedName(
+                node.Root,
+                isUsingStatic ? new[] { CSharpToPythonConvert.UsingStaticMagicString } : Array.Empty<string>()
+            );
+            var usingStaticWarningComment = isUsingStatic ? " #ERROR: Was using static directive" : "";
+            AppendLineWithIndentation($"from {modName} import *{aliasPart}{usingStaticWarningComment}");
+        }
+        private string FormatDottedName(PyAst.DottedName name, params string[] namesToRemove) {
+            var names = namesToRemove.Any() ? name.Names.Except(namesToRemove).ToList() : name.Names;
+            return string.Join(".", names);
         }
         public void Visit(PyAst.FunctionDefinition node) {
             WriteDecorators(node.Decorators ?? Array.Empty<PyAst.Expression>());
@@ -249,7 +260,13 @@ namespace CSharpToPython {
                 }
             }
         }
-        public void Visit(PyAst.ImportStatement node)=> throw new NotImplementedException();
+        public void Visit(PyAst.ImportStatement node) {
+            if (node.AsNames.Count > 1 || node.Names.Count > 1) {
+                throw new NotImplementedException();
+            }
+            var modName = FormatDottedName(node.Names.Single());
+            AppendLineWithIndentation($"import {modName} as {node.AsNames.Single()}");
+        }
         public void Visit(PyAst.PrintStatement node)=> throw new NotImplementedException();
         //public void Visit(PyAst.PythonAst node)=> throw new NotImplementedException();
         public void Visit(PyAst.RaiseStatement node) => AppendLineWithIndentation("raise " + Visit(node.Value));

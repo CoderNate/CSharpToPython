@@ -217,6 +217,26 @@ class SomeClass {
             var obj = (object)someClass.GetObj();
             Assert.IsType<System.Random>(obj);
         }
+        [Fact]
+        public void UsingDirectiveWithAliasWorks() {
+            var code = @"
+using SOMEALIAS = System;
+class SomeClass {
+   public object GetObj() { return new SOMEALIAS.Random() ; }
+}
+";
+            dynamic someClass = Program.ConvertAndRunCode(engine, code);
+            var obj = (object)someClass.GetObj();
+            Assert.IsType<System.Random>(obj);
+        }
+        [Fact]
+        public void UsingStaticDirectiveDoesntWork() {
+            var code = @"
+using static SOMECLASS;
+";
+            var converted = Program.ConvertCode(code);
+            Assert.Contains("#ERROR", converted);
+        }
 
         [Fact]
         public void InterfaceIsIgnored() {
