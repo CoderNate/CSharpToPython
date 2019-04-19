@@ -6,6 +6,7 @@ using CSharpSyntaxKind = Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 using PythonOperator = IronPython.Compiler.PythonOperator;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
+using SyntaxFactory = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace IronPython.Compiler.Ast {
     public class FunctionDefinition2 { }
@@ -60,7 +61,7 @@ namespace CSharpToPython {
             var args = node.ArgumentList.Arguments.Select(a => (PyAst.Arg)Visit(a)).ToArray();
             TypeSyntax type;
             if (node.Type is IdentifierNameSyntax ident && ident.Identifier.Text == "Exception") {
-                type = Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ParseTypeName("System.Exception");
+                type = SyntaxFactory.ParseTypeName("System.Exception");
             } else {
                 type = node.Type;
             }
@@ -234,6 +235,15 @@ namespace CSharpToPython {
                 convertedTypeArgsList = convertedTypeArgs.Single();
             }
             return new PyAst.IndexExpression(new PyAst.NameExpression(node.Identifier.Text), convertedTypeArgsList);
+        }
+        public override PyAst.Node VisitNullableType(NullableTypeSyntax node) {
+            var separatedTypeList = SyntaxFactory.SingletonSeparatedList(node.ElementType);
+            var typeArgs = SyntaxFactory.TypeArgumentList(separatedTypeList);
+            var converted = SyntaxFactory.QualifiedName(
+                 SyntaxFactory.IdentifierName("System"),
+                 SyntaxFactory.GenericName("Nullable").WithTypeArgumentList(typeArgs)
+            );
+            return Visit(converted);
         }
 
         public override PyAst.Node VisitElementAccessExpression(ElementAccessExpressionSyntax node) {
@@ -696,8 +706,7 @@ namespace CSharpToPython {
             }
             IReadOnlyList<MemberDeclarationSyntax> members;
             if (constructorCount == 0 && (instanceFields.Any() || node.BaseList != null)) {
-                var fakeConstructor = Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ConstructorDeclaration("")
-                    .WithBody(Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Block());
+                var fakeConstructor = SyntaxFactory.ConstructorDeclaration("").WithBody(SyntaxFactory.Block());
                 members = new MemberDeclarationSyntax[] { fakeConstructor }.Concat(nonFieldMembers).ToArray();
             } else {
                 members = nonFieldMembers;
@@ -1374,7 +1383,7 @@ namespace CSharpToPython {
 
     public class BreakRemovingVisitor : Microsoft.CodeAnalysis.CSharp.CSharpSyntaxRewriter {
         public override SyntaxNode VisitBreakStatement(BreakStatementSyntax node) {
-            return Microsoft.CodeAnalysis.CSharp.SyntaxFactory.EmptyStatement();
+            return SyntaxFactory.EmptyStatement();
         }
     }
 }

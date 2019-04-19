@@ -241,6 +241,13 @@ return x;
             var rslt = Program.ConvertAndRunStatements(engine, code, new[] { "System" });
             Assert.IsType<Tuple<int, int>>(rslt);
         }
+        [Fact]
+        public void NullableTypeWorks() {
+            var code = @"
+            return new int?(1);";
+            var rslt = Program.ConvertAndRunStatements(engine, code, new[] { "System" });
+            Assert.IsType<int>(rslt);
+        }
 
     }
 }
