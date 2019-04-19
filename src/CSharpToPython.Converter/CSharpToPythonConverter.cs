@@ -83,6 +83,7 @@ namespace CSharpToPython {
             switch (nodeKind) {
                 case CSharpSyntaxKind.LogicalAndExpression:
                     return new PyAst.AndExpression(leftExpr, rightExpr);
+                case CSharpSyntaxKind.CoalesceExpression:
                 case CSharpSyntaxKind.LogicalOrExpression:
                     return new PyAst.OrExpression(leftExpr, rightExpr);
                 case CSharpSyntaxKind.IsExpression:

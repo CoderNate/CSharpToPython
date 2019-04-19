@@ -55,6 +55,9 @@ namespace CSharpToPython.Tests {
         [InlineData("3 & 1", 3 & 1)]
         [InlineData("2 | 1", 2 | 1)]
         [InlineData("2 ^ 1", 2 ^ 1)]
+        [InlineData("null ?? new int[0]", new int [0])]
+        [InlineData("new int[0] ?? null", null)] // This does NOT match C#...
+        [InlineData("new [] {1} ?? null", new[] { 1 })]
         public void BinaryOperatorsWork(string code, object expectedResult) {
             Assert.Equal(expectedResult, Program.ConvertAndRunExpression(engine, code));
         }
