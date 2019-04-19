@@ -92,6 +92,21 @@ public class SomeClass {
             Assert.Equal(1, theInt);
         }
 
+        /// <summary>
+        /// Similar to <see cref="FunctionTests.FunctionWithParameterWorks"/> except that test passes no arguments
+        /// </summary>
+        [Fact]
+        public void ParamsMethodParameterWorks() {
+            var code = @"
+public class SomeClass {
+    public int[] GetInts(params int[] intVals) { return intVals; }
+    public int GetIntArray() { return this.GetInts(1, 2); }
+}";
+            dynamic rslt = Program.ConvertAndRunCode(engine, code);
+            System.Collections.Generic.IEnumerable<object> theInt = rslt.GetIntArray();
+            Assert.Equal(new object[] { 1, 2 }, theInt);
+        }
+
         [Fact]
         public void FieldWithInitializerWorks() {
             var code = @"

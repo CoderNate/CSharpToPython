@@ -19,6 +19,9 @@ namespace CSharpToPython.Tests {
             Assert.Equal(1.0, rslt);
         }
 
+        /// <summary>
+        /// Similar to <see cref="ClassTests.ParamsMethodParameterWorks"/> except that test passes arguments
+        /// </summary>
         [Fact]
         public void FunctionWithParamsParameterWorks() {
             var rslt = Program.ConvertAndRunCode(engine, "int GetInt(params int[] args) { return args; }");
