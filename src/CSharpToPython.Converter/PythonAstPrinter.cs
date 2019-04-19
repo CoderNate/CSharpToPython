@@ -50,11 +50,11 @@ namespace CSharpToPython {
                 case PyAst.UnaryExpression n: return Visit(n);
                 case PyAst.YieldExpression n: return Visit(n);
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Printing of expression node {node} not implemented");
             }
         }
         public string Visit(PyAst.AndExpression node) => $"({Visit(node.Left)} and {Visit(node.Right)})";
-        public string Visit(PyAst.BackQuoteExpression node) => throw new NotImplementedException();
+        public string Visit(PyAst.BackQuoteExpression node) => throw CreateNotImplementedEx();
         public string Visit(PyAst.BinaryExpression node) {
             string operatorText;
             switch (node.Operator) {
@@ -75,7 +75,7 @@ namespace CSharpToPython {
                 case IronPython.Compiler.PythonOperator.BitwiseOr: operatorText = "|"; break;
                 case IronPython.Compiler.PythonOperator.ExclusiveOr: operatorText = "^"; break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Printing of operator {node.Operator} not implemented");
             }
             return $"({Visit(node.Left)} {operatorText} {Visit(node.Right)})";
         }
@@ -111,28 +111,28 @@ namespace CSharpToPython {
                 case null:
                     return "None";
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Printing of constant expression {node.Value} not implemented");
             }
         }
-        public string Visit(PyAst.DictionaryComprehension node) => throw new NotImplementedException();
-        public string Visit(PyAst.DictionaryExpression node) => throw new NotImplementedException();
-        public string Visit(PyAst.ErrorExpression node) => throw new NotImplementedException();
-        public string Visit(PyAst.GeneratorExpression node) => throw new NotImplementedException();
+        public string Visit(PyAst.DictionaryComprehension node) => throw CreateNotImplementedEx();
+        public string Visit(PyAst.DictionaryExpression node) => throw CreateNotImplementedEx();
+        public string Visit(PyAst.ErrorExpression node) => throw CreateNotImplementedEx();
+        public string Visit(PyAst.GeneratorExpression node) => throw CreateNotImplementedEx();
         public string Visit(PyAst.IndexExpression node) => $"{Visit(node.Target)}[{Visit(node.Index)}]";
         public string Visit(PyAst.LambdaExpression node) {
             var args = string.Join(", ", node.Function.Parameters.Select(p => Visit(p)));
             var convertedExpr = Visit(((PyAst.ReturnStatement)node.Function.Body).Expression);
             return $"lambda { args }: {convertedExpr}";
         }
-        public string Visit(PyAst.ListComprehension node) => throw new NotImplementedException();
+        public string Visit(PyAst.ListComprehension node) => throw CreateNotImplementedEx();
         public string Visit(PyAst.ListExpression node) => $"[{ VisitExpressionsList(node.Items)}]";
         public string Visit(PyAst.MemberExpression node) => $"{Visit(node.Target)}.{node.Name}";
         public string Visit(PyAst.NameExpression node) => node.Name;
         public string Visit(PyAst.OrExpression node) => $"({Visit(node.Left)} or {Visit(node.Right)})";
         public string Visit(PyAst.ParenthesisExpression node) => $"({Visit(node.Expression)})";
-        public string Visit(PyAst.SetComprehension node) => throw new NotImplementedException();
-        public string Visit(PyAst.SetExpression node) => throw new NotImplementedException();
-        public string Visit(PyAst.SliceExpression node) => throw new NotImplementedException();
+        public string Visit(PyAst.SetComprehension node) => throw CreateNotImplementedEx();
+        public string Visit(PyAst.SetExpression node) => throw CreateNotImplementedEx();
+        public string Visit(PyAst.SliceExpression node) => throw CreateNotImplementedEx();
         public string Visit(PyAst.TupleExpression node) => $"({VisitExpressionsList(node.Items)})";
         public string Visit(PyAst.UnaryExpression node) {
             string operatorText;
@@ -143,11 +143,11 @@ namespace CSharpToPython {
                 case IronPython.Compiler.PythonOperator.Not:
                     return $"(not {Visit(node.Expression)})";
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Printing of operator {node.Op} not implemented");
             }
             return $"{operatorText}{Visit(node.Expression)}";
         }
-        public string Visit(PyAst.YieldExpression node) => throw new NotImplementedException();
+        public string Visit(PyAst.YieldExpression node) => throw CreateNotImplementedEx();
 
 
         public void Visit(PyAst.Statement node) {
@@ -177,11 +177,11 @@ namespace CSharpToPython {
                 case PyAst.WhileStatement n: Visit(n); return;
                 case PyAst.WithStatement n: Visit(n); return;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Printing of statement {node} not implemented");
             }
         }
 
-        public void Visit(PyAst.AssertStatement node)=> throw new NotImplementedException();
+        public void Visit(PyAst.AssertStatement node)=> throw CreateNotImplementedEx();
         public void Visit(PyAst.AssignmentStatement node) {
             AppendLineWithIndentation($"{VisitExpressionsList(node.Left)} = {Visit(node.Right)}");
         }
@@ -193,7 +193,7 @@ namespace CSharpToPython {
                 case IronPython.Compiler.PythonOperator.Multiply: op = "*="; break;
                 case IronPython.Compiler.PythonOperator.Divide: op = "/="; break;
                 default:
-                    throw new NotImplementedException();
+                    throw CreateNotImplementedEx();
             }
             AppendLineWithIndentation($"{Visit(node.Left)} {op} {Visit(node.Right)}");
         }
@@ -212,9 +212,9 @@ namespace CSharpToPython {
             }
         }
         public void Visit(PyAst.ContinueStatement node) => AppendLineWithIndentation("continue");
-        public void Visit(PyAst.DelStatement node)=> throw new NotImplementedException();
+        public void Visit(PyAst.DelStatement node)=> throw CreateNotImplementedEx();
         public void Visit(PyAst.EmptyStatement node) => AppendLineWithIndentation("pass");
-        public void Visit(PyAst.ExecStatement node)=> throw new NotImplementedException();
+        public void Visit(PyAst.ExecStatement node)=> throw CreateNotImplementedEx();
         public void Visit(PyAst.ExpressionStatement node) => AppendLineWithIndentation(Visit(node.Expression));
         public void Visit(PyAst.ForStatement node) {
             AppendLineWithIndentation($"for {Visit(node.Left)} in {Visit(node.List)}:");
@@ -243,7 +243,7 @@ namespace CSharpToPython {
                 Visit(node.Body);
             }
         }
-        public void Visit(PyAst.GlobalStatement node)=> throw new NotImplementedException();
+        public void Visit(PyAst.GlobalStatement node)=> throw CreateNotImplementedEx();
         public void Visit(PyAst.IfStatement node) {
             var isFirst = true;
             foreach (var ifTest in node.Tests) {
@@ -262,15 +262,19 @@ namespace CSharpToPython {
         }
         public void Visit(PyAst.ImportStatement node) {
             if (node.AsNames.Count > 1 || node.Names.Count > 1) {
-                throw new NotImplementedException();
+                throw CreateNotImplementedEx();
             }
             var modName = FormatDottedName(node.Names.Single());
             AppendLineWithIndentation($"import {modName} as {node.AsNames.Single()}");
         }
-        public void Visit(PyAst.PrintStatement node)=> throw new NotImplementedException();
-        //public void Visit(PyAst.PythonAst node)=> throw new NotImplementedException();
-        public void Visit(PyAst.RaiseStatement node) => AppendLineWithIndentation("raise " + Visit(node.Value));
-        public void Visit(PyAst.ReturnStatement node) => AppendLineWithIndentation("return " + Visit(node.Expression));
+        public void Visit(PyAst.PrintStatement node)=> throw CreateNotImplementedEx();
+        //public void Visit(PyAst.PythonAst node)=> throw CreateNotImplementedEx();
+        public void Visit(PyAst.RaiseStatement node) {
+            AppendLineWithIndentation("raise" + (node.Value is null ? "" : " " + Visit(node.Value)));
+        }
+        public void Visit(PyAst.ReturnStatement node) {
+            AppendLineWithIndentation("return" + (node.Expression is null ? "" : " " + Visit(node.Expression)));
+        }
         public void Visit(PyAst.SuiteStatement node) {
             foreach (var stmt in node.Statements) {
                 Visit(stmt);
@@ -311,18 +315,18 @@ namespace CSharpToPython {
             }
         }
         public string Visit(PyAst.Arg node) => (node.Name is null ? "" : node.Name + " = ") + Visit(node.Expression);
-        public void Visit(PyAst.ComprehensionFor node)=> throw new NotImplementedException();
-        public void Visit(PyAst.ComprehensionIf node)=> throw new NotImplementedException();
-        public void Visit(PyAst.DottedName node)=> throw new NotImplementedException();
-        public void Visit(PyAst.IfStatementTest node)=> throw new NotImplementedException();
-        public void Visit(PyAst.ModuleName node)=> throw new NotImplementedException();
+        public void Visit(PyAst.ComprehensionFor node)=> throw CreateNotImplementedEx();
+        public void Visit(PyAst.ComprehensionIf node)=> throw CreateNotImplementedEx();
+        public void Visit(PyAst.DottedName node)=> throw CreateNotImplementedEx();
+        public void Visit(PyAst.IfStatementTest node)=> throw CreateNotImplementedEx();
+        public void Visit(PyAst.ModuleName node)=> throw CreateNotImplementedEx();
         public string Visit(PyAst.Parameter node) {
             var maybeStar = node.IsList ? "*" : "";
             return maybeStar + node.Name + (node.DefaultValue == null ? "" : $" = {Visit(node.DefaultValue)}");
         }
-        public void Visit(PyAst.RelativeModuleName node)=> throw new NotImplementedException();
-        public void Visit(PyAst.SublistParameter node)=> throw new NotImplementedException();
-        public void Visit(PyAst.TryStatementHandler node)=> throw new NotImplementedException();
+        public void Visit(PyAst.RelativeModuleName node)=> throw CreateNotImplementedEx();
+        public void Visit(PyAst.SublistParameter node)=> throw CreateNotImplementedEx();
+        public void Visit(PyAst.TryStatementHandler node)=> throw CreateNotImplementedEx();
 
 
         public void Visit(PyAst.Node node) {
@@ -330,7 +334,7 @@ namespace CSharpToPython {
                 case PyAst.Expression n: stringBuilder.Append(Visit(n)); return;
                 case PyAst.Statement n: Visit(n); return;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Printing of node {node} is not implemented");
             }
         }
 
@@ -345,6 +349,11 @@ namespace CSharpToPython {
             public void Dispose() {
                 Printer.IndentLevel--;
             }
+        }
+
+        private NotImplementedException CreateNotImplementedEx(
+                [System.Runtime.CompilerServices.CallerMemberName] string caller = null) {
+            return new NotImplementedException(caller);
         }
     }
 }

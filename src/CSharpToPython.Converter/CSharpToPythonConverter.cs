@@ -124,7 +124,7 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.LogicalNotExpression: op = PythonOperator.Not; break;
                 case CSharpSyntaxKind.BitwiseNotExpression: op = PythonOperator.Invert; break;
                 default:
-                    throw new NotImplementedException($"Prefix unary operator {node} not implemented");
+                    throw new NotImplementedException($"Prefix unary operator {node.Kind()} not implemented");
             }
             return new PyAst.UnaryExpression(op, (PyAst.Expression)Visit(node.Operand));
         }
@@ -135,7 +135,7 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.PostIncrementExpression: op = PythonOperator.Add; break;
                 case CSharpSyntaxKind.PostDecrementExpression: op = PythonOperator.Subtract; break;
                 default:
-                    throw new NotImplementedException($"Postfix unary operator {node} not implemented");
+                    throw new NotImplementedException($"Postfix unary operator {node.Kind()} not implemented");
             }
             return new PyAst.AugmentedAssignStatement(
                 op,
@@ -220,7 +220,7 @@ namespace CSharpToPython {
             } else if (convertedRight is PyAst.NameExpression nameExpr) {
                 return new PyAst.MemberExpression( convertedLeft, nameExpr.Name );
             } else {
-                throw new NotImplementedException();
+                throw new NotImplementedException("VisitQualifiedName only implemented for this 'right' expression.");
             }
         }
         public override PyAst.Node VisitSimpleBaseType(SimpleBaseTypeSyntax node) {
