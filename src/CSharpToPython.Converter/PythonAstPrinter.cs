@@ -19,6 +19,10 @@ namespace CSharpToPython {
         private void AppendLineWithIndentation(string line)
                 => stringBuilder.AppendLine(new string(' ', IndentLevel * 4) + line);
 
+        private string VisitExpressionsList(IEnumerable<PyAst.Expression> nodes) {
+            return string.Join(", ", nodes.Select(n => Visit(n)));
+        }
+
         public string Visit(PyAst.Expression node) {
             switch (node) {
                 case PyAst.AndExpression n: return Visit(n);
@@ -121,9 +125,7 @@ namespace CSharpToPython {
             return $"lambda { args }: {convertedExpr}";
         }
         public string Visit(PyAst.ListComprehension node) => throw new NotImplementedException();
-        public string Visit(PyAst.ListExpression node) {
-            return $"[{string.Join(", ", node.Items.Select(item => Visit(item)))}]";
-        }
+        public string Visit(PyAst.ListExpression node) => $"[{ VisitExpressionsList(node.Items)}]";
         public string Visit(PyAst.MemberExpression node) => $"{Visit(node.Target)}.{node.Name}";
         public string Visit(PyAst.NameExpression node) => node.Name;
         public string Visit(PyAst.OrExpression node) => $"({Visit(node.Left)} or {Visit(node.Right)})";
@@ -131,7 +133,7 @@ namespace CSharpToPython {
         public string Visit(PyAst.SetComprehension node) => throw new NotImplementedException();
         public string Visit(PyAst.SetExpression node) => throw new NotImplementedException();
         public string Visit(PyAst.SliceExpression node) => throw new NotImplementedException();
-        public string Visit(PyAst.TupleExpression node) => throw new NotImplementedException();
+        public string Visit(PyAst.TupleExpression node) => $"({VisitExpressionsList(node.Items)})";
         public string Visit(PyAst.UnaryExpression node) {
             string operatorText;
             switch (node.Op) {
@@ -181,7 +183,7 @@ namespace CSharpToPython {
 
         public void Visit(PyAst.AssertStatement node)=> throw new NotImplementedException();
         public void Visit(PyAst.AssignmentStatement node) {
-            AppendLineWithIndentation($"{string.Join(", ", node.Left.Select(a => Visit(a)))} = {Visit(node.Right)}");
+            AppendLineWithIndentation($"{VisitExpressionsList(node.Left)} = {Visit(node.Right)}");
         }
         public void Visit(PyAst.AugmentedAssignStatement node) {
             string op;
@@ -198,9 +200,7 @@ namespace CSharpToPython {
         public void Visit(PyAst.BreakStatement node)=> AppendLineWithIndentation("break");
         public void Visit(PyAst.ClassDefinition node) {
             WriteDecorators(node.Decorators ?? Array.Empty<PyAst.Expression>());
-            var basesPart = node.Bases.Any()
-                ? $"({string.Join(", ", node.Bases.Select(b => Visit(b)))})"
-                : "";
+            var basesPart = node.Bases.Any() ? $"({VisitExpressionsList(node.Bases)})" : "";
             AppendLineWithIndentation($"class {node.Name}{basesPart}:");
             using (new Indenter(this)) {
                 Visit(node.Body);

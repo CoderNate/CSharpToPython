@@ -227,6 +227,20 @@ return x;
             Assert.Equal(1, rslt);
         }
 
+        [Fact]
+        public void GenericTypeArgWorks() {
+            var code = @"
+            return new System.Tuple<int>(1);";
+            var rslt = Program.ConvertAndRunStatements(engine, code, new[] { "System" });
+            Assert.IsType<Tuple<int>>(rslt);
+        }
+        [Fact]
+        public void GenericTypeArgsWork() {
+            var code = @"
+            return new System.Tuple<int, int>(1, 1);";
+            var rslt = Program.ConvertAndRunStatements(engine, code, new[] { "System" });
+            Assert.IsType<Tuple<int, int>>(rslt);
+        }
 
     }
 }

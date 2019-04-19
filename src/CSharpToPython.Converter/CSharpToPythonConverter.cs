@@ -195,6 +195,7 @@ namespace CSharpToPython {
         public override PyAst.Node VisitPredefinedType(PredefinedTypeSyntax node) {
             string convertedTypeName;
             switch (node.Keyword.RawKind) {
+                case (int)CSharpSyntaxKind.StringKeyword: convertedTypeName = "str"; break;
                 case (int)CSharpSyntaxKind.IntKeyword: convertedTypeName = "int"; break;
                 case (int)CSharpSyntaxKind.ObjectKeyword: convertedTypeName = "object"; break;
                 case (int)CSharpSyntaxKind.BoolKeyword: convertedTypeName = "bool"; break;
@@ -206,15 +207,33 @@ namespace CSharpToPython {
             return new PyAst.NameExpression(convertedTypeName);
         }
         public override PyAst.Node VisitQualifiedName(QualifiedNameSyntax node) {
-            return new PyAst.MemberExpression(
-                (PyAst.Expression)Visit(node.Left),
-                node.Right.Identifier.Text
-            );
-            //var nameParts = node.ToString().Split('.');
-            //return new PyAst.DottedName(nameParts);
+            var convertedLeft = (PyAst.Expression)Visit(node.Left);
+            var convertedRight = Visit(node.Right);
+            if (convertedRight is PyAst.IndexExpression indexExpr) {
+                var memberName = ((PyAst.NameExpression)indexExpr.Target).Name;
+                return new PyAst.IndexExpression(
+                    new PyAst.MemberExpression(convertedLeft, memberName),
+                    indexExpr.Index
+                );
+            } else if (convertedRight is PyAst.NameExpression nameExpr) {
+                return new PyAst.MemberExpression( convertedLeft, nameExpr.Name );
+            } else {
+                throw new NotImplementedException();
+            }
         }
         public override PyAst.Node VisitSimpleBaseType(SimpleBaseTypeSyntax node) {
             return Visit(node.Type);
+        }
+        public override PyAst.Node VisitGenericName(GenericNameSyntax node) {
+            var typeArgs = node.TypeArgumentList.Arguments;
+            var convertedTypeArgs = typeArgs.Select(a => (PyAst.Expression)Visit(a)).ToArray();
+            PyAst.Expression convertedTypeArgsList;
+            if (typeArgs.Count > 1) {
+                convertedTypeArgsList = new PyAst.TupleExpression(false, convertedTypeArgs);
+            } else {
+                convertedTypeArgsList = convertedTypeArgs.Single();
+            }
+            return new PyAst.IndexExpression(new PyAst.NameExpression(node.Identifier.Text), convertedTypeArgsList);
         }
 
         public override PyAst.Node VisitElementAccessExpression(ElementAccessExpressionSyntax node) {
