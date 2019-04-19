@@ -50,7 +50,8 @@ namespace CSharpToPython {
             return new PyAst.ListExpression(node.Initializer.Expressions.Select(e => (PyAst.Expression)Visit(e)).ToArray());
         }
         public override PyAst.Node VisitArrayCreationExpression(ArrayCreationExpressionSyntax node) {
-            return new PyAst.ListExpression(node.Initializer.Expressions.Select(e => (PyAst.Expression)Visit(e)).ToArray());
+            var expressions = node.Initializer?.Expressions ?? Enumerable.Empty<ExpressionSyntax>();
+            return new PyAst.ListExpression(expressions.Select(e => (PyAst.Expression)Visit(e)).ToArray());
         }
         public override PyAst.Node VisitObjectCreationExpression(ObjectCreationExpressionSyntax node) {
             if (node.Initializer != null) {

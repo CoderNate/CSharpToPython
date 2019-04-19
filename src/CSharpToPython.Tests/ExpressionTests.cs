@@ -77,6 +77,7 @@ namespace CSharpToPython.Tests {
         [Theory]
         [InlineData("new [] {1, 2}", new [] { 1, 2 })]
         [InlineData("new int[] {1, 2}", new [] { 1, 2 })]
+        [InlineData("new int[0]", new int[0])]
         public void ArraysWork(string code, object expectedResult) {
             Assert.Equal(expectedResult, Program.ConvertAndRunExpression(engine, code));
         }
