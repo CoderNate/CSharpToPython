@@ -687,11 +687,12 @@ namespace CSharpToPython {
                 }
                 if (member is FieldDeclarationSyntax field
                         && !field.Modifiers.Any(CSharpSyntaxKind.StaticKeyword)) {
-                    var variable = field.Declaration.Variables.Single();
-                    instanceFields.Add(new FieldInfo {
-                        IdentifierName = variable.Identifier.Text,
-                        Initializer = variable.Initializer
-                    });
+                    foreach (var variable in field.Declaration.Variables) {
+                        instanceFields.Add(new FieldInfo {
+                            IdentifierName = variable.Identifier.Text,
+                            Initializer = variable.Initializer
+                        });
+                    }
                 } else {
                     nonFieldMembers.Add(member);
                 }

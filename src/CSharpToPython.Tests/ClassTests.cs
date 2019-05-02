@@ -128,6 +128,16 @@ public class SomeClass {
             Assert.Null(someValue);
         }
         [Fact]
+        public void FieldWithMultipleVariablesWorks() {
+            var code = @"
+public class SomeClass {
+    public object SomeValue, SomeValue2;
+}";
+            dynamic rslt = Program.ConvertAndRunCode(engine, code);
+            object someValue = rslt.SomeValue;
+            Assert.Null(someValue);
+        }
+        [Fact]
         public void StaticFieldWithoutInitializerWorks() {
             var code = @"
 public class SomeClass {
