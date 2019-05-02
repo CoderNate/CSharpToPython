@@ -82,6 +82,12 @@ namespace CSharpToPython.Tests {
         }
 
         [Fact]
+        public void AsExpressionWorks() {
+            Assert.NotNull(Program.ConvertAndRunExpression(engine, "new object() as object"));
+            Assert.Null(Program.ConvertAndRunExpression(engine, "null as string"));
+        }
+
+        [Fact]
         public void IsExpressionWorks() {
             Assert.Equal(true, Program.ConvertAndRunExpression(engine, "1 is int"));
         }

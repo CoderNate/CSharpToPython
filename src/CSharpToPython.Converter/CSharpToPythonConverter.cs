@@ -90,7 +90,26 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.IsExpression:
                     return new PyAst.CallExpression(
                         new PyAst.NameExpression("isinstance"),
-                        new [] {leftExpr, rightExpr}.Select(expr => new PyAst.Arg(expr)).ToArray()
+                        new[] { new PyAst.Arg(leftExpr), new PyAst.Arg(rightExpr) }
+                    );
+                case CSharpSyntaxKind.AsExpression:
+                    var innerLambda = new PyAst.LambdaExpression(
+                        new PyAst.FunctionDefinition(null, new[] { new PyAst.Parameter("__arg__") },
+                            new PyAst.ReturnStatement(
+                                new PyAst.ConditionalExpression(
+                                    new PyAst.CallExpression(
+                                        new PyAst.NameExpression("isinstance"),
+                                        new[] { new PyAst.Arg(new PyAst.NameExpression("__arg__")), new PyAst.Arg(rightExpr) }
+                                    ),
+                                    new PyAst.NameExpression("__arg__"),
+                                    new PyAst.ConstantExpression(null)
+                                )
+                            )
+                        )
+                    );
+                    return new PyAst.CallExpression(
+                        new PyAst.ParenthesisExpression(innerLambda),
+                        new [] {new PyAst.Arg(leftExpr)}
                     );
             }
             PythonOperator pythonOp;
