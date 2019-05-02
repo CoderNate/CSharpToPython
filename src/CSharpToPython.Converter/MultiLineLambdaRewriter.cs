@@ -154,6 +154,12 @@ namespace CSharpToPython {
                             statementContainer = methodDecl;
                             break;
                         }
+                        if (statementParent is FieldDeclarationSyntax fieldDecl) {
+                            throw new NotImplementedException("Rewriting of a lambda defined in a field initializer is not implemented.");
+                        }
+                        if (statementParent is PropertyDeclarationSyntax propDecl) {
+                            throw new NotImplementedException("Rewriting of a lambda defined in a property initializer is not implemented.");
+                        }
                     }
                 }
                 switch (statementContainer) {

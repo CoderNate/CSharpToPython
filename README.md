@@ -1,6 +1,6 @@
 # CSharpToPython
 
-Uses the Microsoft Roslyn (Microsoft.CodeAnalysis libraries) to parse C# and generate Python source code.  https://codernate.github.io/CSharpToPython/
+Uses the Microsoft Roslyn (Microsoft.CodeAnalysis libraries) to parse C# and generate Python source code.  Try it in your browser at https://codernate.github.io/CSharpToPython/
 
 ### Conversion Webpage
 

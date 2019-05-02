@@ -313,7 +313,7 @@ namespace CSharpToPython {
                 case CSharpSyntaxKind.MultiplyAssignmentExpression: op = PythonOperator.Multiply; break;
                 case CSharpSyntaxKind.DivideAssignmentExpression: op = PythonOperator.Divide; break;
                 default:
-                    throw new NotImplementedException($"Assignment operator {node} not implemented yet");
+                    throw new NotImplementedException($"Assignment operator {node.Kind()} not implemented yet");
             }
             return new PyAst.AugmentedAssignStatement(op, leftExpr, right);
         }
@@ -474,6 +474,9 @@ namespace CSharpToPython {
 
         public override PyAst.Node VisitTryStatement(TryStatementSyntax node) {
             PyAst.TryStatementHandler ConvertCatchBlock(CatchClauseSyntax catchClause) {
+                if (catchClause.Declaration is null) {
+                    throw new NotImplementedException("Catch statement with no declaration not implemented");
+                }
                 var hasIdentifier = catchClause.Declaration.Identifier.Text != "";
                 return new PyAst.TryStatementHandler(
                     (PyAst.Expression)Visit(catchClause.Declaration.Type),
@@ -502,7 +505,7 @@ namespace CSharpToPython {
         public override PyAst.Node VisitLocalFunctionStatement(LocalFunctionStatementSyntax node) {
             var parameters = node.ParameterList.Parameters.Select(p => (PyAst.Parameter)Visit(p)).ToArray();
             var body = node.ExpressionBody is null
-                ? (PyAst.SuiteStatement)VisitBlock(node.Body)
+                ? (PyAst.SuiteStatement)VisitBlock(node.Body ?? SyntaxFactory.Block())
                 : (PyAst.Statement)new PyAst.ReturnStatement((PyAst.Expression)Visit(node.ExpressionBody.Expression));
             return new PyAst.FunctionDefinition(node.Identifier.Text, parameters, body);
         }
@@ -520,7 +523,7 @@ namespace CSharpToPython {
             }
 
             var body = node.ExpressionBody is null
-                ? (PyAst.SuiteStatement)VisitBlock(node.Body)
+                ? (PyAst.SuiteStatement)VisitBlock(node.Body ?? SyntaxFactory.Block() )
                 : (PyAst.Statement)new PyAst.ReturnStatement((PyAst.Expression)Visit(node.ExpressionBody.Expression));
             var funcDef = new PyAst.FunctionDefinition(node.Identifier.Text, parameters, body);
             if (isStatic)
