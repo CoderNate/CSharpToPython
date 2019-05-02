@@ -99,6 +99,14 @@ namespace CSharpToPython.Tests {
             Assert.Equal(1, Program.ConvertAndRunExpression(engine, "new [] {1, 2}[0]"));
         }
 
+        [Fact(Skip = "Not implemented yet")]
+        public void DictionaryWorks() {
+            var dict = Program.ConvertAndRunStatements(engine, 
+                "return new System.Collections.Generic.Dictionary<int, int> { { 1, 1 } }",
+                new[] { "System" });
+            Assert.Equal(1, ((dynamic)dict)[1]);
+        }
+
         [Theory]
         [InlineData("true ? 1 : 2", 1)]
         public void TernaryExpressionWorks(string code, object expectedResult) {
