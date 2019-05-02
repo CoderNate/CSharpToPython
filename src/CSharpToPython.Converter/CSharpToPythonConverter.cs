@@ -24,6 +24,7 @@ namespace CSharpToPython {
             switch (node.Kind()) {
                 case CSharpSyntaxKind.NumericLiteralExpression:
                 case CSharpSyntaxKind.StringLiteralExpression:
+                case CSharpSyntaxKind.CharacterLiteralExpression:
                 case CSharpSyntaxKind.TrueLiteralExpression:
                 case CSharpSyntaxKind.FalseLiteralExpression:
                 case CSharpSyntaxKind.NullLiteralExpression:

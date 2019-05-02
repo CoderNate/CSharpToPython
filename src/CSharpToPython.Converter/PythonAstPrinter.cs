@@ -90,6 +90,14 @@ namespace CSharpToPython {
             .Select(a => a.ToString()).ToArray();
 
         public string Visit(PyAst.ConstantExpression node) {
+            string formatString(string rawString) {
+                foreach (var charToEscape in charsToEscape) {
+                    if (rawString.Contains(charToEscape)) {
+                        rawString = rawString.Replace(charToEscape, "\\" + charToEscape);
+                    }
+                }
+                return $"\"{ rawString }\"";
+            }
             switch (node.Value) {
                 case double val:
                     if (Math.Truncate(val) == val) {
@@ -97,13 +105,10 @@ namespace CSharpToPython {
                         return val.ToString("0.0");
                     }
                     return node.Value.ToString();
+                case char val:
+                    return formatString(val.ToString());
                 case string val:
-                    foreach (var charToEscape in charsToEscape) {
-                        if (val.Contains(charToEscape)) {
-                            val = val.Replace(charToEscape, "\\" + charToEscape);
-                        }
-                    }
-                    return $"\"{ val }\"";
+                    return formatString(val);
                 case int val:
                     return node.Value.ToString();
                 case bool val:
@@ -111,7 +116,7 @@ namespace CSharpToPython {
                 case null:
                     return "None";
                 default:
-                    throw new NotImplementedException($"Printing of constant expression {node.Value} not implemented");
+                    throw new NotImplementedException($"Printing of constant expression {node.Value.GetType()} not implemented");
             }
         }
         public string Visit(PyAst.DictionaryComprehension node) => throw CreateNotImplementedEx();

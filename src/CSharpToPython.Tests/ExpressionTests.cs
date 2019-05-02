@@ -19,6 +19,8 @@ namespace CSharpToPython.Tests {
         [InlineData("\"Something \\\"in\\\" quotes\"", "Something \"in\" quotes")]
         [InlineData("true", true)]
         [InlineData("null", null)]
+        [InlineData("'a'", "a")]
+        [InlineData(@"'\\'", @"\")]
         public void LiteralConversionWorks(string code, object expectedResult) {
             Assert.Equal(expectedResult, Program.ConvertAndRunExpression(engine, code));
         }
