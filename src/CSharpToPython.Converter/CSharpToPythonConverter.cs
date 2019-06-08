@@ -195,6 +195,8 @@ namespace CSharpToPython {
             );
         }
 
+        public override PyAst.Node VisitTypeOfExpression(TypeOfExpressionSyntax node) => Visit(node.Type);
+
         public override PyAst.Node VisitPredefinedType(PredefinedTypeSyntax node) {
             string convertedTypeName;
             switch (node.Keyword.RawKind) {

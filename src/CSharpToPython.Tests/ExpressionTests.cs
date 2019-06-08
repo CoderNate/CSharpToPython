@@ -85,6 +85,15 @@ namespace CSharpToPython.Tests {
         public void IsExpressionWorks() {
             Assert.Equal(true, Program.ConvertAndRunExpression(engine, "1 is int"));
         }
+        [Fact(Skip = "Not implemented yet")]
+        public void PatternMatchExpressionWorks() {
+            Assert.Equal(1, Program.ConvertAndRunExpression(engine, "1 is int i ? i : 0"));
+        }
+
+        [Fact]
+        public void TypeofExpressionWorks() {
+            Assert.True((bool)Program.ConvertAndRunExpression(engine, "typeof(object) == typeof(object)"));
+        }
 
         [Theory]
         [InlineData("new [] {1, 2}", new [] { 1, 2 })]
