@@ -569,18 +569,21 @@ namespace CSharpToPython {
         }
 
         public override PyAst.Node VisitConstructorDeclaration(ConstructorDeclarationSyntax node) {
-            return VisitConstructorDeclaration(node, (ClassDeclarationSyntax)node.Parent);
+            var parentClass = (ClassDeclarationSyntax)node.Parent;
+            var hasBaseList = parentClass.BaseList != null & parentClass.BaseList.Types.Any();
+            return VisitConstructorDeclaration(node, parentClass.Identifier, hasBaseList);
         }
         private PyAst.Node VisitConstructorDeclaration(
                 ConstructorDeclarationSyntax node,
-                ClassDeclarationSyntax parentNode) {
+                SyntaxToken ownerClassIdentifier,
+                bool ownerClassHasBases) {
             PyAst.Statement callSuperInitStatement;
             // Without semantic analysis we don't know if everything in the BaseList is an interface
-            if (node.Initializer != null || (parentNode.BaseList != null && parentNode.BaseList.Types.Any())) {
+            if (node.Initializer != null || ownerClassHasBases) {
                 var callSuper = new PyAst.CallExpression(
                     new PyAst.NameExpression("super"),
                     new PyAst.Arg[] {
-                        new PyAst.Arg(new PyAst.NameExpression(parentNode.Identifier.Text)),
+                        new PyAst.Arg(new PyAst.NameExpression(ownerClassIdentifier.Text)),
                         new PyAst.Arg(new PyAst.NameExpression("self"))
                     }
                 );
@@ -698,11 +701,30 @@ namespace CSharpToPython {
             var bases = node.BaseList?.Types.Select(t => (PyAst.Expression)Visit(t)).ToArray()
                 ?? new PyAst.Expression[] { new PyAst.NameExpression("object") };
 
+            var convertedMembers = ConvertClassMembers(
+                    node.Members,
+                    node.Identifier,
+                    hasBases: node.BaseList != null);
+
+            var popped = _classNamesStack.Pop();
+            System.Diagnostics.Debug.Assert(popped == node.Identifier.Text);
+            return new PyAst.ClassDefinition(
+                node.Identifier.Text,
+                bases,
+                new PyAst.SuiteStatement(convertedMembers)
+            );
+        }
+
+        private PyAst.Statement[] ConvertClassMembers(
+                SyntaxList<MemberDeclarationSyntax> classMembers,
+                SyntaxToken classNameIdentifier,
+                bool hasBases) {
+
             // Keep track of fields and auto-properties so we can initialize them in the constructor.
             var instanceFields = new List<FieldInfo>();
             var nonFieldMembers = new List<MemberDeclarationSyntax>();
             var constructorCount = 0;
-            foreach (var member in node.Members) {
+            foreach (var member in classMembers) {
                 if (member is ConstructorDeclarationSyntax) {
                     constructorCount++;
                 }
@@ -732,7 +754,7 @@ namespace CSharpToPython {
                 }
             }
             IReadOnlyList<MemberDeclarationSyntax> members;
-            if (constructorCount == 0 && (instanceFields.Any() || node.BaseList != null)) {
+            if (constructorCount == 0 && (instanceFields.Any() || hasBases)) {
                 var fakeConstructor = SyntaxFactory.ConstructorDeclaration("").WithBody(SyntaxFactory.Block());
                 members = new MemberDeclarationSyntax[] { fakeConstructor }.Concat(nonFieldMembers).ToArray();
             } else {
@@ -748,7 +770,8 @@ namespace CSharpToPython {
                     var alreadyAssigned = constructor.Body is null
                             ? new HashSet<string>()
                             : GetDefinitelyAssignedNames(constructor.Body.Statements);
-                    var convertedConstructor = (PyAst.FunctionDefinition)VisitConstructorDeclaration(constructor, node);
+                    var convertedConstructor =
+                            (PyAst.FunctionDefinition)VisitConstructorDeclaration(constructor, classNameIdentifier, hasBases);
                     if (instanceFields.Any()) {
                         PyAst.Statement convertField(FieldInfo field) {
                             var memberAccess = new PyAst.MemberExpression(
@@ -782,13 +805,7 @@ namespace CSharpToPython {
             var convertedMembers = EnsureAtleastOneStatement(
                 members.Select(convertMember).Where(a => !(a is PyAst.SuiteStatement s && !s.Statements.Any())).ToArray()
             );
-            var popped = _classNamesStack.Pop();
-            System.Diagnostics.Debug.Assert(popped == node.Identifier.Text);
-            return new PyAst.ClassDefinition(
-                node.Identifier.Text,
-                bases,
-                new PyAst.SuiteStatement(convertedMembers)
-            );
+            return convertedMembers;
         }
 
         private HashSet<string> GetDefinitelyAssignedNames(IEnumerable<StatementSyntax> statements) {
@@ -818,6 +835,19 @@ namespace CSharpToPython {
 
         public override PyAst.Node VisitInterfaceDeclaration(InterfaceDeclarationSyntax node) {
             return new PyAst.SuiteStatement(Array.Empty<PyAst.Statement>());
+        }
+
+        public override PyAst.Node VisitStructDeclaration(StructDeclarationSyntax node) {
+            var convertedMembers = ConvertClassMembers(
+                    node.Members,
+                classNameIdentifier: node.Identifier,
+                hasBases: node.BaseList != null);
+
+            return new PyAst.ClassDefinition(
+                node.Identifier.Text,
+                Array.Empty<PyAst.Expression>(),
+                new PyAst.SuiteStatement(convertedMembers)
+            );
         }
 
         public override PyAst.Node VisitEnumDeclaration(EnumDeclarationSyntax node) {

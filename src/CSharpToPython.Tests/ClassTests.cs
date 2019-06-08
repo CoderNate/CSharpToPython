@@ -17,6 +17,16 @@ public class SomeClass {
         }
 
         [Fact]
+        public void SimpleStructWorks() {
+            var code = @"
+public struct SomeStruct {
+    int Main() { return 1; }
+}";
+            var rslt = Program.ConvertAndRunCode(engine, code);
+            Assert.NotNull(rslt);
+        }
+
+        [Fact]
         public void ClassBaseTypesWork() {
             var code = @"
 public class SomeBaseClass { public int GetInt() => 1; }
