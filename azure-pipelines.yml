@@ -13,7 +13,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet restore ./src
+- task: DotNetCoreCLI@2
+  displayName: dotnet restore
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
+    includeNuGetOrg: true
 - task: MSBuild@1
   inputs:
     configuration: $(buildConfiguration)
