@@ -24,10 +24,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Uno.Wasm.Bootstrap" Version="1.1.0-dev.445" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.10" />
 
-    <DotNetCliToolReference Include="Uno.Wasm.Bootstrap.Cli" Version="1.1.0-dev.445" />
+    <PackageReference Include="Uno.Wasm.Bootstrap" Version="2.1.0" />
+    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="2.1.0" PrivateAssets="all" />
   </ItemGroup>
   
   <ItemGroup>
